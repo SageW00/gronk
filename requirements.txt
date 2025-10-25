@@ -20,6 +20,7 @@ prompt-toolkit
 
 # GUI
 customtkinter
+Pillow
 
 # Utilities
 python-dotenv
