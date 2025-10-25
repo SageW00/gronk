@@ -51,12 +51,12 @@ The build process creates:
    python3 --version
    ```
 
-2. **PostgreSQL 16** (with pgvector extension)
+2. **PostgreSQL 16/18+** (with pgvector extension)
    - Host: localhost
-   - Port: 5433
+   - Port: 5432 (default PostgreSQL port)
    - Database: AEROSPACE
    - User: postgres
-   - Password: sagewoo
+   - Password: 1234
 
 3. **Ollama** (with gemma3:1b model)
    ```bash
@@ -240,9 +240,9 @@ Edit `config/config.yaml` to customize:
 ```yaml
 database:
   host: localhost
-  port: 5433
+  port: 5432        # Default PostgreSQL port
   user: postgres
-  password: sagewoo
+  password: "1234"
   database: AEROSPACE
 
 ollama:
@@ -286,10 +286,10 @@ rag:
 
 ```bash
 # Check if PostgreSQL is running
-pg_isready -h localhost -p 5433
+pg_isready -h localhost -p 5432
 
 # Test connection
-psql -h localhost -p 5433 -U postgres -d AEROSPACE
+psql -h localhost -p 5432 -U postgres -d AEROSPACE
 ```
 
 ### Ollama Issues
@@ -312,7 +312,7 @@ If you get "extension vector does not exist":
 
 ```sql
 -- Connect to database
-psql -h localhost -p 5433 -U postgres -d AEROSPACE
+psql -h localhost -p 5432 -U postgres -d AEROSPACE
 
 -- Install extension
 CREATE EXTENSION vector;
@@ -359,6 +359,67 @@ mkdir -p data/textbook/XX.XXX
 3. Add PDFs and index:
 ```bash
 python3 run_cli.py index --course XX.XXX
+```
+
+## Uninstalling
+
+### Windows
+
+**Easy Way:**
+```cmd
+Double-click: START_HERE.bat
+Choose option: 8 (Uninstall)
+```
+
+**Manual:**
+```cmd
+uninstall.bat
+```
+
+### Linux/Mac
+
+```bash
+./uninstall.sh
+```
+
+### Uninstall Options
+
+The uninstaller provides three options:
+
+1. **Remove Everything** (Complete Uninstall)
+   - Removes virtual environment
+   - Removes executables and build files
+   - Removes PDF data files
+   - Drops PostgreSQL database
+   - Cleans Python cache
+
+2. **Remove Application Only**
+   - Removes virtual environment
+   - Removes executables and build files
+   - Keeps PDF data and database
+
+3. **Remove Build Files Only**
+   - Removes executables and build artifacts
+   - Keeps everything else
+   - Useful for rebuilding
+
+### Manual Complete Removal
+
+If you want to completely remove everything manually:
+
+```bash
+# Remove application folder
+rm -rf /path/to/gronk
+
+# Drop database (optional)
+psql -U postgres -p 5432 -c "DROP DATABASE IF EXISTS AEROSPACE;"
+
+# Uninstall Ollama (optional)
+# Windows: Use Windows Settings > Apps
+# Linux: sudo rm -rf /usr/local/bin/ollama
+
+# Uninstall PostgreSQL (optional)
+# Follow your OS-specific PostgreSQL uninstall instructions
 ```
 
 ## Technical Details

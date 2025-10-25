@@ -24,10 +24,10 @@ echo.
 
 REM Check PostgreSQL
 echo Checking PostgreSQL connection...
-pg_isready -h localhost -p 5433 >nul 2>&1
+pg_isready -h localhost -p 5432 >nul 2>&1
 if errorlevel 1 (
-    echo WARNING: PostgreSQL may not be running on port 5433
-    echo Please ensure PostgreSQL 16 is installed and running
+    echo WARNING: PostgreSQL may not be running on port 5432
+    echo Please ensure PostgreSQL 16/18 is installed and running
     echo.
 )
 

@@ -1,11 +1,12 @@
 # Aerospace RAG Configuration
 
 # PostgreSQL Database Configuration
+# Compatible with PostgreSQL 16+ (including PostgreSQL 18)
 database:
   host: localhost
-  port: 5433
+  port: 5432
   user: postgres
-  password: sagewoo
+  password: "1234"
   database: AEROSPACE
 
 # Ollama Configuration

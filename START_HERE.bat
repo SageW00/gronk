@@ -18,9 +18,10 @@ echo   [4] Run CLI (Command-Line Interface)
 echo   [5] Index Documents
 echo   [6] View Statistics
 echo   [7] Test System
-echo   [8] Exit
+echo   [8] Uninstall Application
+echo   [9] Exit
 echo.
-set /p choice="Enter your choice (1-8): "
+set /p choice="Enter your choice (1-9): "
 
 if "%choice%"=="1" goto setup
 if "%choice%"=="2" goto build
@@ -29,7 +30,8 @@ if "%choice%"=="4" goto run_cli
 if "%choice%"=="5" goto index
 if "%choice%"=="6" goto stats
 if "%choice%"=="7" goto test
-if "%choice%"=="8" goto exit
+if "%choice%"=="8" goto uninstall
+if "%choice%"=="9" goto exit
 goto menu
 
 :setup
@@ -113,6 +115,13 @@ if exist "dist\AerospaceRAG-CLI.exe" (
     echo ERROR: Please run Setup first (Option 1)
 )
 pause
+goto menu
+
+:uninstall
+cls
+echo Starting uninstall...
+echo.
+call uninstall.bat
 goto menu
 
 :exit
