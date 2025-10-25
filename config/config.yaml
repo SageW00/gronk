@@ -1,0 +1,44 @@
+# Aerospace RAG Configuration
+
+# PostgreSQL Database Configuration
+database:
+  host: localhost
+  port: 5433
+  user: postgres
+  password: sagewoo
+  database: AEROSPACE
+
+# Ollama Configuration
+ollama:
+  base_url: http://localhost:11434
+  model: gemma3:1b
+  embedding_model: gemma3:1b
+  temperature: 0.7
+  max_tokens: 2048
+
+# RAG Configuration
+rag:
+  chunk_size: 512
+  chunk_overlap: 100
+  top_k: 5
+  similarity_threshold: 0.7
+
+# Course Configuration
+courses:
+  "2.29": "Numerical Fluid Mechanics"
+  "16.01": "Unified Engineering I"
+  "16.02": "Unified Engineering II"
+  "16.07": "Dynamics"
+  "16.13": "Aerodynamics of Viscous Fluids"
+  "16.20": "Structural Mechanics"
+  "16.50": "Introduction to Propulsion Systems"
+  "16.121": "Analytical Subsonic Aerodynamics"
+  "16.333": "Aircraft Stability and Control"
+  "16.346": "Astrodynamics"
+  "16.100": "Aerodynamics"
+
+# Data Paths
+paths:
+  data_dir: ./data
+  coursenotes_dir: ./data/coursenotes
+  textbook_dir: ./data/textbook
