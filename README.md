@@ -2,6 +2,22 @@
 
 An AI-powered Retrieval-Augmented Generation (RAG) system for aerospace engineering education. This application uses Ollama (gemma3:1b), PostgreSQL with pgvector, and PDF parsing to create an intelligent assistant for MIT OCW aerospace course materials.
 
+## 🪟 Windows Users - Quick Start!
+
+**For Windows 11 users wanting executable (.exe) files:**
+
+1. **Double-click `START_HERE.bat`** - This gives you a menu to setup and run everything
+2. Or see **[WINDOWS_GUIDE.md](WINDOWS_GUIDE.md)** for complete Windows instructions
+3. Or run **`setup_windows.bat`** → **`build_executables.bat`** to create .exe files
+
+The build process creates:
+- `AerospaceRAG-GUI.exe` - Double-click to launch the graphical interface
+- `AerospaceRAG-CLI.exe` - Command-line interface
+
+**All files are in the `dist\` folder after building!**
+
+---
+
 ## Features
 
 - **AI-Powered Question Answering**: Get intelligent answers to aerospace engineering questions

@@ -27,3 +27,6 @@ tqdm==4.66.1
 
 # Vector Operations
 faiss-cpu==1.7.4
+
+# Building Executables (Windows)
+pyinstaller==6.3.0
