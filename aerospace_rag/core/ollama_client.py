@@ -156,17 +156,68 @@ class OllamaClient:
     def check_model_available(self) -> bool:
         """Check if the configured models are available"""
         try:
-            models = ollama.list()
-            model_names = [m['name'] for m in models.get('models', [])]
+            models_response = ollama.list()
 
-            # Debug: Show what Ollama actually returns
-            print(f"🔍 Detected Ollama models: {model_names}")
+            # Debug: Show raw API response structure
+            print(f"🔍 DEBUG - Raw Ollama API response type: {type(models_response)}")
+            print(f"🔍 DEBUG - Response keys: {models_response.keys() if isinstance(models_response, dict) else 'Not a dict'}")
+
+            # Handle different API response structures
+            model_names = []
+
+            if isinstance(models_response, dict):
+                # Try different possible structures
+                if 'models' in models_response:
+                    models_list = models_response['models']
+                    print(f"🔍 DEBUG - Found 'models' key, type: {type(models_list)}")
+
+                    if isinstance(models_list, list) and len(models_list) > 0:
+                        # Check first item structure
+                        first_item = models_list[0]
+                        print(f"🔍 DEBUG - First model structure: {first_item}")
+
+                        # Extract names based on structure
+                        for m in models_list:
+                            if isinstance(m, dict):
+                                # Try different possible keys
+                                name = m.get('name') or m.get('model') or m.get('id') or str(m)
+                                model_names.append(name)
+                            elif isinstance(m, str):
+                                model_names.append(m)
+                            else:
+                                model_names.append(str(m))
+                else:
+                    # Maybe models are at root level
+                    print(f"🔍 DEBUG - No 'models' key, checking root level")
+                    model_names = list(models_response.keys())
+            elif isinstance(models_response, list):
+                # Response is directly a list
+                print(f"🔍 DEBUG - Response is a list")
+                for m in models_response:
+                    if isinstance(m, dict):
+                        name = m.get('name') or m.get('model') or m.get('id') or str(m)
+                        model_names.append(name)
+                    else:
+                        model_names.append(str(m))
+
+            # Clean up None values
+            model_names = [m for m in model_names if m and m != 'None']
+
+            print(f"✅ Detected Ollama models: {model_names}")
+
+            if not model_names:
+                print("⚠️  Warning: No models found!")
+                print(f"   Raw response: {models_response}")
+                return False
 
             missing_models = []
 
             # Helper function to check if model exists (handles version tags)
             def model_exists(target_model, available_models):
                 """Check if model exists, handling tags like :latest"""
+                if not target_model or not available_models:
+                    return False
+
                 # Direct match
                 if target_model in available_models:
                     return True
@@ -175,10 +226,11 @@ class OllamaClient:
                     return True
                 # Check if any model starts with the target name
                 for model in available_models:
-                    if model.startswith(f"{target_model}:"):
+                    model_str = str(model)
+                    if model_str.startswith(f"{target_model}:"):
                         return True
                     # Handle case where stored model has tags but we're looking for base
-                    if model.split(':')[0] == target_model.split(':')[0]:
+                    if ':' in model_str and model_str.split(':')[0] == target_model.split(':')[0]:
                         return True
                 return False
 
@@ -206,8 +258,17 @@ class OllamaClient:
 
             return True
 
+        except KeyError as e:
+            print(f"❌ Failed to parse model list - KeyError: {e}")
+            print(f"   This usually means the Ollama API structure changed.")
+            print(f"   Please run: ollama list")
+            print(f"   And share the output so we can fix the parser.")
+            return False
         except Exception as e:
-            print(f"Failed to check model availability: {e}")
+            print(f"❌ Failed to check model availability: {e}")
+            print(f"   Error type: {type(e).__name__}")
+            import traceback
+            print(f"   Traceback: {traceback.format_exc()}")
             return False
 
     def pull_model(self, model_name: Optional[str] = None) -> bool:
