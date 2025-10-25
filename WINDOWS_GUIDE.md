@@ -394,4 +394,106 @@ Now you can launch the app directly from your desktop!
 
 ---
 
+## Uninstalling the Application
+
+If you need to remove Aerospace RAG from your system:
+
+### Method 1: Using the Main Menu (Recommended)
+
+```cmd
+Double-click: START_HERE.bat
+Choose option: 8 (Uninstall Application)
+```
+
+### Method 2: Direct Uninstaller
+
+```cmd
+Double-click: uninstall.bat
+```
+
+### Uninstall Options
+
+The uninstaller will give you three choices:
+
+**1. Remove Everything (Complete Uninstall)**
+- Removes virtual environment (venv folder)
+- Removes executables (dist folder)
+- Removes build files (build folder)
+- **Removes all PDF data files**
+- **Drops PostgreSQL AEROSPACE database**
+- Cleans Python cache files
+
+**Warning**: This option will permanently delete your indexed data and database!
+
+**2. Remove Application Only**
+- Removes virtual environment
+- Removes executables
+- Removes build files
+- **Keeps your PDF files**
+- **Keeps PostgreSQL database**
+- Cleans Python cache
+
+This is good if you want to reinstall later with your existing data.
+
+**3. Remove Build Files Only**
+- Removes executables (dist folder)
+- Removes build artifacts (build folder)
+- Cleans Python cache
+- **Keeps everything else**
+
+Useful when you want to rebuild the executables or free up disk space.
+
+### What Gets Removed
+
+| Item | Option 1 | Option 2 | Option 3 |
+|------|----------|----------|----------|
+| Virtual Environment | ✅ | ✅ | ❌ |
+| Executables (.exe) | ✅ | ✅ | ✅ |
+| Build Files | ✅ | ✅ | ✅ |
+| Python Cache | ✅ | ✅ | ✅ |
+| PDF Data Files | ✅ | ❌ | ❌ |
+| PostgreSQL Database | ✅ | ❌ | ❌ |
+| Source Code | ❌ | ❌ | ❌ |
+
+### Complete Removal
+
+After running the uninstaller, to completely remove everything:
+
+1. **Delete the application folder**
+   ```cmd
+   rmdir /s /q C:\path\to\gronk
+   ```
+
+2. **Uninstall Ollama** (optional)
+   - Go to Windows Settings → Apps
+   - Find "Ollama" and click Uninstall
+
+3. **Uninstall PostgreSQL** (optional)
+   - Go to Windows Settings → Apps
+   - Find "PostgreSQL 18" and click Uninstall
+   - Or use the PostgreSQL uninstaller in the installation directory
+
+### Backup Before Uninstalling
+
+If you want to backup your data before uninstalling:
+
+**Backup PDFs:**
+```cmd
+xcopy /E /I data\coursenotes C:\backup\coursenotes
+xcopy /E /I data\textbook C:\backup\textbook
+```
+
+**Backup Database:**
+```cmd
+pg_dump -U postgres -p 5432 AEROSPACE > aerospace_backup.sql
+```
+
+**Restore Database Later:**
+```cmd
+psql -U postgres -p 5432 -c "CREATE DATABASE AEROSPACE;"
+psql -U postgres -p 5432 AEROSPACE < aerospace_backup.sql
+```
+
+---
+
 **You're all set!** Double-click `AerospaceRAG-GUI.exe` to start using your AI aerospace assistant! ✈️

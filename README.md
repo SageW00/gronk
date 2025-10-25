@@ -361,6 +361,67 @@ mkdir -p data/textbook/XX.XXX
 python3 run_cli.py index --course XX.XXX
 ```
 
+## Uninstalling
+
+### Windows
+
+**Easy Way:**
+```cmd
+Double-click: START_HERE.bat
+Choose option: 8 (Uninstall)
+```
+
+**Manual:**
+```cmd
+uninstall.bat
+```
+
+### Linux/Mac
+
+```bash
+./uninstall.sh
+```
+
+### Uninstall Options
+
+The uninstaller provides three options:
+
+1. **Remove Everything** (Complete Uninstall)
+   - Removes virtual environment
+   - Removes executables and build files
+   - Removes PDF data files
+   - Drops PostgreSQL database
+   - Cleans Python cache
+
+2. **Remove Application Only**
+   - Removes virtual environment
+   - Removes executables and build files
+   - Keeps PDF data and database
+
+3. **Remove Build Files Only**
+   - Removes executables and build artifacts
+   - Keeps everything else
+   - Useful for rebuilding
+
+### Manual Complete Removal
+
+If you want to completely remove everything manually:
+
+```bash
+# Remove application folder
+rm -rf /path/to/gronk
+
+# Drop database (optional)
+psql -U postgres -p 5432 -c "DROP DATABASE IF EXISTS AEROSPACE;"
+
+# Uninstall Ollama (optional)
+# Windows: Use Windows Settings > Apps
+# Linux: sudo rm -rf /usr/local/bin/ollama
+
+# Uninstall PostgreSQL (optional)
+# Follow your OS-specific PostgreSQL uninstall instructions
+```
+
 ## Technical Details
 
 - **Embeddings**: 384-dimensional vectors from gemma3:1b
