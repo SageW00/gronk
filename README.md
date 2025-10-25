@@ -51,12 +51,12 @@ The build process creates:
    python3 --version
    ```
 
-2. **PostgreSQL 16** (with pgvector extension)
+2. **PostgreSQL 16/18+** (with pgvector extension)
    - Host: localhost
-   - Port: 5433
+   - Port: 5432 (default PostgreSQL port)
    - Database: AEROSPACE
    - User: postgres
-   - Password: sagewoo
+   - Password: 1234
 
 3. **Ollama** (with gemma3:1b model)
    ```bash
@@ -240,9 +240,9 @@ Edit `config/config.yaml` to customize:
 ```yaml
 database:
   host: localhost
-  port: 5433
+  port: 5432        # Default PostgreSQL port
   user: postgres
-  password: sagewoo
+  password: "1234"
   database: AEROSPACE
 
 ollama:
@@ -286,10 +286,10 @@ rag:
 
 ```bash
 # Check if PostgreSQL is running
-pg_isready -h localhost -p 5433
+pg_isready -h localhost -p 5432
 
 # Test connection
-psql -h localhost -p 5433 -U postgres -d AEROSPACE
+psql -h localhost -p 5432 -U postgres -d AEROSPACE
 ```
 
 ### Ollama Issues
@@ -312,7 +312,7 @@ If you get "extension vector does not exist":
 
 ```sql
 -- Connect to database
-psql -h localhost -p 5433 -U postgres -d AEROSPACE
+psql -h localhost -p 5432 -U postgres -d AEROSPACE
 
 -- Install extension
 CREATE EXTENSION vector;

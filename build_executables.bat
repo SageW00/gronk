@@ -75,7 +75,7 @@ echo   - config\config.yaml: Configuration file
 echo   - data\: Place your PDF files here
 echo.
 echo Quick Start:
-echo   1. Ensure PostgreSQL 16 is running on port 5433
+echo   1. Ensure PostgreSQL 16/18 is running on port 5432
 echo   2. Ensure Ollama is running with gemma3:1b model
 echo   3. Double-click AerospaceRAG-GUI.exe to launch the GUI
 echo   4. Or run AerospaceRAG-CLI.exe from command prompt

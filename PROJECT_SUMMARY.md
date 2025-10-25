@@ -100,10 +100,10 @@ Built with CustomTkinter:
 ```yaml
 database:
   host: localhost
-  port: 5433
+  port: 5432
   database: AEROSPACE
   user: postgres
-  password: sagewoo
+  password: "1234"
 ```
 
 ### Ollama Configuration
@@ -282,7 +282,7 @@ ollama pull gemma3:1b
 ### Issue: "Extension vector does not exist"
 **Solution**:
 ```sql
-psql -h localhost -p 5433 -U postgres -d AEROSPACE
+psql -h localhost -p 5432 -U postgres -d AEROSPACE
 CREATE EXTENSION vector;
 ```
 

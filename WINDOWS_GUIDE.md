@@ -15,18 +15,18 @@ Verify installation:
 python --version
 ```
 
-### 2. Install PostgreSQL 16
+### 2. Install PostgreSQL 16/18
 
 Download from: https://www.postgresql.org/download/windows/
 
 During installation:
-- Set port: **5433**
-- Set password for postgres user: **sagewoo**
+- Set port: **5432** (default port, or use any available port)
+- Set password for postgres user: **1234**
 - Remember to install Stack Builder for additional tools
 
 After installation, create the database:
 ```cmd
-psql -U postgres -p 5433
+psql -U postgres -p 5432
 CREATE DATABASE AEROSPACE;
 CREATE EXTENSION vector;
 \q
@@ -170,7 +170,7 @@ AerospaceRAG-CLI.exe test                    # Test connectivity
 ### On Another Windows Computer
 
 1. Copy the `dist\` folder
-2. Ensure PostgreSQL 16 is running (port 5433)
+2. Ensure PostgreSQL 16/18 is running (port 5432)
 3. Ensure Ollama is running with gemma3:1b
 4. Double-click `AerospaceRAG-GUI.exe`
 
@@ -194,11 +194,11 @@ AerospaceRAG-CLI.exe test                    # Test connectivity
 **Solution**:
 1. Check PostgreSQL is running:
    ```cmd
-   pg_isready -h localhost -p 5433
+   pg_isready -h localhost -p 5432
    ```
 2. Start PostgreSQL service:
    - Open Services (Win + R, type `services.msc`)
-   - Find "postgresql-x64-16"
+   - Find "postgresql-x64-16" or "postgresql-x64-18"
    - Click "Start"
 
 ### "Failed to connect to Ollama"
@@ -227,7 +227,7 @@ setup_windows.bat
 
 **Solution**:
 ```cmd
-psql -U postgres -p 5433 -d AEROSPACE
+psql -U postgres -p 5432 -d AEROSPACE
 CREATE EXTENSION vector;
 \q
 ```
@@ -251,9 +251,9 @@ Edit `config\config.yaml` to customize:
 ```yaml
 database:
   host: localhost
-  port: 5433        # Change if using different port
+  port: 5432        # Default PostgreSQL port
   user: postgres
-  password: sagewoo # Change if using different password
+  password: "1234"  # Change if using different password
   database: AEROSPACE
 
 ollama:

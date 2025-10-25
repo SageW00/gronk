@@ -5,8 +5,8 @@ Get up and running in 5 minutes!
 ## Prerequisites Checklist
 
 - [ ] Python 3.8+ installed
-- [ ] PostgreSQL 16 running on port 5433
-- [ ] Database "AEROSPACE" exists with user "postgres" (password: "sagewoo")
+- [ ] PostgreSQL 16/18 running on port 5432
+- [ ] Database "AEROSPACE" exists with user "postgres" (password: "1234")
 - [ ] Ollama installed and running (`ollama serve`)
 - [ ] gemma3:1b model pulled (`ollama pull gemma3:1b`)
 
@@ -115,7 +115,7 @@ ollama serve
 
 ### "Failed to connect to database"
 ```bash
-pg_isready -h localhost -p 5433
+pg_isready -h localhost -p 5432
 # If not running, start PostgreSQL
 ```
 

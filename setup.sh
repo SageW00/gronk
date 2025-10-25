@@ -16,10 +16,10 @@ echo ""
 
 # Check if PostgreSQL is running
 echo "Checking PostgreSQL..."
-if pg_isready -h localhost -p 5433 > /dev/null 2>&1; then
-    echo "✓ PostgreSQL is running on port 5433"
+if pg_isready -h localhost -p 5432 > /dev/null 2>&1; then
+    echo "✓ PostgreSQL is running on port 5432"
 else
-    echo "✗ PostgreSQL is not running on port 5433"
+    echo "✗ PostgreSQL is not running on port 5432"
     echo "  Please start PostgreSQL and ensure it's configured correctly"
     exit 1
 fi
