@@ -48,7 +48,25 @@ class DatabaseManager:
         """Initialize database schema with pgvector extension"""
         try:
             # Enable pgvector extension
-            self.cursor.execute("CREATE EXTENSION IF NOT EXISTS vector;")
+            try:
+                self.cursor.execute("CREATE EXTENSION IF NOT EXISTS vector;")
+            except Exception as vec_error:
+                # Provide helpful error message for missing pgvector
+                error_msg = str(vec_error)
+                if "is not available" in error_msg or "does not exist" in error_msg:
+                    print("\n" + "="*60)
+                    print("ERROR: pgvector extension is not installed")
+                    print("="*60)
+                    print("\nThe pgvector extension is required but not installed in PostgreSQL.")
+                    print("\nTo install pgvector:")
+                    print("  Windows: Run install_pgvector.bat")
+                    print("  Linux/Mac: Run ./install_pgvector.sh")
+                    print("\nOr install manually:")
+                    print("  1. Download from: https://github.com/pgvector/pgvector")
+                    print("  2. Follow installation instructions for your OS")
+                    print("  3. Run: psql -U postgres -p 5432 -d AEROSPACE -c \"CREATE EXTENSION vector;\"")
+                    print("\n" + "="*60 + "\n")
+                raise Exception(f"pgvector extension not installed. {error_msg}")
 
             # Create documents table
             self.cursor.execute("""

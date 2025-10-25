@@ -58,6 +58,20 @@ The build process creates:
    - User: postgres
    - Password: 1234
 
+   **Installing pgvector extension:**
+
+   The setup script will help you install pgvector automatically. Or install manually:
+
+   ```bash
+   # Windows
+   install_pgvector.bat
+
+   # Linux/Mac
+   ./install_pgvector.sh
+   ```
+
+   More details: See "pgvector Installation" section below.
+
 3. **Ollama** (with gemma3:1b model)
    ```bash
    # Install Ollama
@@ -103,6 +117,63 @@ pip install -r requirements.txt
 # Initialize database
 python3 run_cli.py init
 ```
+
+## pgvector Installation
+
+The **pgvector extension** is required for vector similarity search. The setup script will check for and offer to install it automatically.
+
+### Automatic Installation (Recommended)
+
+**Windows:**
+```cmd
+install_pgvector.bat
+```
+
+**Linux/Mac:**
+```bash
+./install_pgvector.sh
+```
+
+The installer will:
+1. Check if pgvector is already installed
+2. Attempt automatic installation for your OS
+3. Provide manual instructions if automatic installation fails
+
+### Manual Installation
+
+**Windows:**
+1. Download prebuilt binaries from: https://github.com/pgvector/pgvector/releases
+2. Extract the ZIP file
+3. Copy files to PostgreSQL directory:
+   - `vector.dll` → `C:\Program Files\PostgreSQL\18\lib\`
+   - `vector.control` and `vector--*.sql` → `C:\Program Files\PostgreSQL\18\share\extension\`
+4. Restart PostgreSQL service
+5. Create extension: `psql -U postgres -p 5432 -d AEROSPACE -c "CREATE EXTENSION vector;"`
+
+**Linux (Ubuntu/Debian):**
+```bash
+sudo apt-get install postgresql-server-dev-all build-essential git
+git clone https://github.com/pgvector/pgvector.git
+cd pgvector
+make
+sudo make install
+psql -U postgres -p 5432 -d AEROSPACE -c "CREATE EXTENSION vector;"
+```
+
+**macOS:**
+```bash
+brew install pgvector
+# or build from source
+psql -U postgres -p 5432 -d AEROSPACE -c "CREATE EXTENSION vector;"
+```
+
+### Troubleshooting pgvector
+
+If you get errors about pgvector:
+1. Run the installer: `install_pgvector.bat` (Windows) or `./install_pgvector.sh` (Linux/Mac)
+2. Check PostgreSQL version compatibility
+3. Restart PostgreSQL after installation
+4. Verify installation: `psql -U postgres -p 5432 -d AEROSPACE -c "\dx"`
 
 ## Usage
 

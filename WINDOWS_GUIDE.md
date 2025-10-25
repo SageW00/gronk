@@ -33,8 +33,33 @@ CREATE EXTENSION vector;
 ```
 
 **Install pgvector extension**:
-1. Download pgvector for Windows from: https://github.com/pgvector/pgvector/releases
-2. Or use Stack Builder to install extensions
+
+The pgvector extension is required for vector similarity search. The setup script will automatically check and offer to install it, or you can install it manually.
+
+**Option 1: Automatic (During Setup)**
+- The setup script will detect if pgvector is missing
+- It will offer to run the installer for you
+- Just answer 'Y' when prompted
+
+**Option 2: Manual Installation**
+```cmd
+# Run the pgvector installer
+install_pgvector.bat
+```
+
+The installer provides three methods:
+1. Automatic SQL installation (tries to create the extension)
+2. Download prebuilt binaries from GitHub
+3. Use PostgreSQL Stack Builder
+
+**Option 3: Manual Steps**
+1. Download from: https://github.com/pgvector/pgvector/releases
+2. Look for: `pgvector-X.X.X-postgres-18-windows-x64.zip`
+3. Extract and copy files:
+   - `vector.dll` → `C:\Program Files\PostgreSQL\18\lib\`
+   - `vector.control` and `vector--*.sql` → `C:\Program Files\PostgreSQL\18\share\extension\`
+4. Restart PostgreSQL service (services.msc)
+5. Run: `psql -U postgres -p 5432 -d AEROSPACE -c "CREATE EXTENSION vector;"`
 
 ### 3. Install Ollama
 

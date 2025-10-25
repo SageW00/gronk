@@ -69,12 +69,46 @@ echo ""
 chmod +x run_cli.py
 chmod +x run_gui.py
 chmod +x setup.sh
+chmod +x install_pgvector.sh
+chmod +x uninstall.sh
 echo "✓ Scripts made executable"
+echo ""
+
+# Check for pgvector extension
+echo "Checking for pgvector extension..."
+if psql -U postgres -p 5432 -d AEROSPACE -c "SELECT * FROM pg_extension WHERE extname='vector';" > /dev/null 2>&1; then
+    echo "✓ pgvector extension is installed"
+else
+    echo ""
+    echo "! WARNING: pgvector extension may not be installed"
+    echo ""
+    read -p "Would you like to install pgvector now? (y/n): " install_pgvector
+    if [[ "$install_pgvector" =~ ^[Yy]$ ]]; then
+        ./install_pgvector.sh
+    else
+        echo ""
+        echo "Skipping pgvector installation."
+        echo "You can install it later by running: ./install_pgvector.sh"
+        echo ""
+    fi
+fi
 echo ""
 
 # Initialize database
 echo "Initializing database..."
-python3 run_cli.py init
+if ! python3 run_cli.py init; then
+    echo ""
+    echo "========================================="
+    echo "  DATABASE INITIALIZATION FAILED"
+    echo "========================================="
+    echo ""
+    echo "If you see a pgvector error, run:"
+    echo "  ./install_pgvector.sh"
+    echo ""
+    echo "Then run setup again."
+    echo ""
+    exit 1
+fi
 echo ""
 
 echo "========================================="

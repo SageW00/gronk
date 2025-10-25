@@ -1,4 +1,5 @@
 @echo off
+setlocal enabledelayedexpansion
 REM Setup script for Aerospace RAG Application - Windows
 REM This will install dependencies and set up the application
 
@@ -64,9 +65,41 @@ echo Installing PyInstaller...
 pip install pyinstaller
 echo.
 
+REM Check for pgvector extension
+echo Checking for pgvector extension...
+psql -U postgres -p 5432 -d AEROSPACE -c "SELECT * FROM pg_extension WHERE extname='vector';" >nul 2>&1
+if errorlevel 1 (
+    echo.
+    echo WARNING: pgvector extension may not be installed
+    echo.
+    set /p install_pgvector="Would you like to install pgvector now? (Y/N): "
+    if /i "!install_pgvector!"=="Y" (
+        call install_pgvector.bat
+    ) else (
+        echo.
+        echo Skipping pgvector installation.
+        echo You can install it later by running: install_pgvector.bat
+        echo.
+    )
+)
+
 REM Initialize database
 echo Initializing database...
 python run_cli.py init
+if errorlevel 1 (
+    echo.
+    echo =========================================
+    echo   DATABASE INITIALIZATION FAILED
+    echo =========================================
+    echo.
+    echo If you see a pgvector error, run:
+    echo   install_pgvector.bat
+    echo.
+    echo Then run setup again.
+    echo.
+    pause
+    exit /b 1
+)
 echo.
 
 echo =========================================
