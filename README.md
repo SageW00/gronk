@@ -532,7 +532,7 @@ psql -U postgres -p 5432 -c "DROP DATABASE IF EXISTS AEROSPACE;"
 
 ## Technical Details
 
-- **Embeddings**: 384-dimensional vectors from embeddinggemma (specialized embedding model)
+- **Embeddings**: 768-dimensional vectors from embeddinggemma (specialized embedding model)
 - **Text Generation**: gemma3:1b for generating answers
 - **Similarity**: Cosine similarity with pgvector's `<=>` operator
 - **Chunking**: Sentence-based with configurable overlap
