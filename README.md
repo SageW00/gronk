@@ -73,6 +73,9 @@ The build process creates:
    More details: See "pgvector Installation" section below.
 
 3. **Ollama** (with required models)
+
+   **Need help? See [OLLAMA_SETUP_GUIDE.md](OLLAMA_SETUP_GUIDE.md) for detailed instructions!**
+
    ```bash
    # Install Ollama
    curl -fsSL https://ollama.com/install.sh | sh
@@ -83,6 +86,15 @@ The build process creates:
    # Pull the required models (in another terminal)
    ollama pull gemma3:1b         # For text generation
    ollama pull embeddinggemma    # For embeddings
+   ```
+
+   **Verify your setup:**
+   ```bash
+   # Linux/Mac
+   ./diagnose_ollama.sh
+
+   # Windows
+   diagnose_ollama.bat
    ```
 
 ## Installation
@@ -355,6 +367,28 @@ rag:
 
 ## Troubleshooting
 
+### Quick Diagnosis Tool
+
+Run this first to identify issues:
+
+```bash
+# Linux/Mac
+./diagnose_ollama.sh
+
+# Windows
+diagnose_ollama.bat
+```
+
+This will check:
+- ✅ Ollama installation
+- ✅ Ollama service running
+- ✅ Both models installed
+- ✅ API connectivity
+
+For detailed Ollama setup help, see **[OLLAMA_SETUP_GUIDE.md](OLLAMA_SETUP_GUIDE.md)**
+
+---
+
 ### PostgreSQL Connection Issues
 
 ```bash
@@ -498,7 +532,7 @@ psql -U postgres -p 5432 -c "DROP DATABASE IF EXISTS AEROSPACE;"
 
 ## Technical Details
 
-- **Embeddings**: 384-dimensional vectors from embeddinggemma (specialized embedding model)
+- **Embeddings**: 768-dimensional vectors from embeddinggemma (specialized embedding model)
 - **Text Generation**: gemma3:1b for generating answers
 - **Similarity**: Cosine similarity with pgvector's `<=>` operator
 - **Chunking**: Sentence-based with configurable overlap

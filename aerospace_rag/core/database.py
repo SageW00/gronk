@@ -69,6 +69,7 @@ class DatabaseManager:
                 raise Exception(f"pgvector extension not installed. {error_msg}")
 
             # Create documents table
+            # Using vector(768) for embeddinggemma model
             self.cursor.execute("""
                 CREATE TABLE IF NOT EXISTS documents (
                     id SERIAL PRIMARY KEY,
@@ -79,7 +80,7 @@ class DatabaseManager:
                     chunk_text TEXT NOT NULL,
                     chunk_index INTEGER NOT NULL,
                     page_number INTEGER,
-                    embedding vector(384),
+                    embedding vector(768),
                     metadata JSONB,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 );

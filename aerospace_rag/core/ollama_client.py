@@ -159,23 +159,51 @@ class OllamaClient:
             models = ollama.list()
             model_names = [m['name'] for m in models.get('models', [])]
 
+            # Debug: Show what Ollama actually returns
+            print(f"🔍 Detected Ollama models: {model_names}")
+
             missing_models = []
 
-            # Check text generation model
-            if self.model not in model_names:
-                missing_models.append(self.model)
-
-            # Check embedding model
-            if self.embedding_model not in model_names:
-                missing_models.append(self.embedding_model)
-
-            if missing_models:
-                print(f"⚠️  Missing models: {', '.join(missing_models)}")
-                print(f"Available models: {model_names}")
+            # Helper function to check if model exists (handles version tags)
+            def model_exists(target_model, available_models):
+                """Check if model exists, handling tags like :latest"""
+                # Direct match
+                if target_model in available_models:
+                    return True
+                # Check with :latest tag
+                if f"{target_model}:latest" in available_models:
+                    return True
+                # Check if any model starts with the target name
+                for model in available_models:
+                    if model.startswith(f"{target_model}:"):
+                        return True
+                    # Handle case where stored model has tags but we're looking for base
+                    if model.split(':')[0] == target_model.split(':')[0]:
+                        return True
                 return False
 
-            print(f"✓ Text model '{self.model}' is available")
-            print(f"✓ Embedding model '{self.embedding_model}' is available")
+            # Check text generation model
+            if not model_exists(self.model, model_names):
+                missing_models.append(self.model)
+                print(f"❌ Text model '{self.model}' not found")
+            else:
+                print(f"✓ Text model '{self.model}' is available")
+
+            # Check embedding model
+            if not model_exists(self.embedding_model, model_names):
+                missing_models.append(self.embedding_model)
+                print(f"❌ Embedding model '{self.embedding_model}' not found")
+            else:
+                print(f"✓ Embedding model '{self.embedding_model}' is available")
+
+            if missing_models:
+                print(f"\n⚠️  Missing models: {', '.join(missing_models)}")
+                print(f"Available models: {model_names}")
+                print(f"\nTo fix, run:")
+                for model in missing_models:
+                    print(f"  ollama pull {model}")
+                return False
+
             return True
 
         except Exception as e:
