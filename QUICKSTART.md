@@ -8,7 +8,9 @@ Get up and running in 5 minutes!
 - [ ] PostgreSQL 16/18 running on port 5432
 - [ ] Database "AEROSPACE" exists with user "postgres" (password: "1234")
 - [ ] Ollama installed and running (`ollama serve`)
-- [ ] gemma3:1b model pulled (`ollama pull gemma3:1b`)
+- [ ] Required models pulled:
+  - [ ] `ollama pull gemma3:1b` (text generation)
+  - [ ] `ollama pull embeddinggemma` (embeddings)
 
 ## Installation (2 minutes)
 
@@ -121,7 +123,8 @@ pg_isready -h localhost -p 5432
 
 ### "Model not found"
 ```bash
-ollama pull gemma3:1b
+ollama pull gemma3:1b         # Text generation
+ollama pull embeddinggemma    # Embeddings
 ```
 
 ### "No PDFs found"

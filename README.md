@@ -72,7 +72,7 @@ The build process creates:
 
    More details: See "pgvector Installation" section below.
 
-3. **Ollama** (with gemma3:1b model)
+3. **Ollama** (with required models)
    ```bash
    # Install Ollama
    curl -fsSL https://ollama.com/install.sh | sh
@@ -80,8 +80,9 @@ The build process creates:
    # Start Ollama
    ollama serve
 
-   # Pull the model (in another terminal)
-   ollama pull gemma3:1b
+   # Pull the required models (in another terminal)
+   ollama pull gemma3:1b         # For text generation
+   ollama pull embeddinggemma    # For embeddings
    ```
 
 ## Installation
@@ -318,7 +319,8 @@ database:
 
 ollama:
   base_url: http://localhost:11434
-  model: gemma3:1b
+  model: gemma3:1b              # Text generation model
+  embedding_model: embeddinggemma  # Embedding model (specialized for embeddings)
   temperature: 0.7
   max_tokens: 2048
 
@@ -334,7 +336,7 @@ rag:
 1. **Document Ingestion**:
    - PDFs are parsed using PyPDF2 and pdfplumber
    - Text is cleaned and split into overlapping chunks
-   - Each chunk is embedded using Ollama's gemma3:1b model
+   - Each chunk is embedded using Ollama's embeddinggemma model (specialized for embeddings)
 
 2. **Vector Storage**:
    - Embeddings are stored in PostgreSQL with pgvector extension
@@ -342,12 +344,12 @@ rag:
    - Metadata includes course info, file name, page number
 
 3. **Query Processing**:
-   - User question is embedded using the same model
+   - User question is embedded using the embeddinggemma model
    - Vector similarity search retrieves top-k relevant chunks
    - Retrieved context is provided to the LLM
 
 4. **Answer Generation**:
-   - Ollama generates response using retrieved context
+   - Ollama generates response using gemma3:1b (text generation model) with retrieved context
    - System prompt guides the model to be an aerospace expert
    - Sources are cited with full metadata
 
@@ -373,8 +375,9 @@ curl http://localhost:11434/api/tags
 pkill ollama
 ollama serve
 
-# Re-pull model if needed
-ollama pull gemma3:1b
+# Re-pull models if needed
+ollama pull gemma3:1b         # Text generation
+ollama pull embeddinggemma    # Embeddings
 ```
 
 ### pgvector Extension
@@ -495,10 +498,11 @@ psql -U postgres -p 5432 -c "DROP DATABASE IF EXISTS AEROSPACE;"
 
 ## Technical Details
 
-- **Embeddings**: 384-dimensional vectors from gemma3:1b
+- **Embeddings**: 384-dimensional vectors from embeddinggemma (specialized embedding model)
+- **Text Generation**: gemma3:1b for generating answers
 - **Similarity**: Cosine similarity with pgvector's `<=>` operator
 - **Chunking**: Sentence-based with configurable overlap
-- **Database**: PostgreSQL 16 with ivfflat index for vector search
+- **Database**: PostgreSQL 16/18 with ivfflat index for vector search
 
 ## License
 

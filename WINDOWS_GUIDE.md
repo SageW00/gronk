@@ -65,14 +65,15 @@ The installer provides three methods:
 
 Download from: https://ollama.com/download/windows
 
-After installation, pull the model:
+After installation, pull the required models:
 ```cmd
 ollama serve
 ```
 
 In another terminal:
 ```cmd
-ollama pull gemma3:1b
+ollama pull gemma3:1b         # Text generation model
+ollama pull embeddinggemma    # Embedding model
 ```
 
 ## Quick Setup (Recommended)

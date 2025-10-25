@@ -26,8 +26,14 @@ class AerospaceRAGGUI:
 
         # Create main window
         self.root = ctk.CTk()
-        self.root.title("Aerospace RAG Assistant")
+        self.root.title("Aerospace RAG Assistant - AI-Powered Aerospace Learning")
         self.root.geometry("1200x800")
+
+        # Set minimum window size
+        self.root.minsize(1000, 600)
+
+        # Center window on screen
+        self.center_window()
 
         # Initialize RAG engine
         self.rag: Optional[RAGEngine] = None
@@ -410,6 +416,17 @@ Course Breakdown:
     def update_status_indicator(self, text: str, color: str):
         """Update status indicator"""
         self.root.after(0, lambda: self.status_indicator.configure(text=text, text_color=color))
+
+    def center_window(self):
+        """Center the window on the screen"""
+        self.root.update_idletasks()
+        width = self.root.winfo_width()
+        height = self.root.winfo_height()
+        screen_width = self.root.winfo_screenwidth()
+        screen_height = self.root.winfo_screenheight()
+        x = (screen_width - width) // 2
+        y = (screen_height - height) // 2
+        self.root.geometry(f"{width}x{height}+{x}+{y}")
 
     def run(self):
         """Start the GUI application"""
