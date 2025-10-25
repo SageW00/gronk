@@ -34,6 +34,14 @@ class OllamaClient:
             return embedding
 
         except Exception as e:
+            error_msg = str(e).lower()
+            if 'not found' in error_msg or 'pull' in error_msg:
+                raise Exception(
+                    f"❌ Embedding model '{self.embedding_model}' not found!\n\n"
+                    f"Please pull the model first:\n"
+                    f"  ollama pull {self.embedding_model}\n\n"
+                    f"Or run the setup script again to auto-install models."
+                )
             raise Exception(f"Failed to generate embedding: {e}")
 
     def generate_embeddings_batch(self, texts: List[str]) -> List[np.ndarray]:
@@ -99,6 +107,14 @@ class OllamaClient:
                 return response['message']['content']
 
         except Exception as e:
+            error_msg = str(e).lower()
+            if 'not found' in error_msg or 'pull' in error_msg:
+                raise Exception(
+                    f"❌ Text generation model '{self.model}' not found!\n\n"
+                    f"Please pull the model first:\n"
+                    f"  ollama pull {self.model}\n\n"
+                    f"Or run the setup script again to auto-install models."
+                )
             raise Exception(f"Failed to generate completion: {e}")
 
     def _generate_streaming(self, messages: List[Dict]) -> str:
@@ -138,30 +154,75 @@ class OllamaClient:
             return False
 
     def check_model_available(self) -> bool:
-        """Check if the configured model is available"""
+        """Check if the configured models are available"""
         try:
             models = ollama.list()
             model_names = [m['name'] for m in models.get('models', [])]
 
+            missing_models = []
+
+            # Check text generation model
             if self.model not in model_names:
-                print(f"Warning: Model {self.model} not found in Ollama")
+                missing_models.append(self.model)
+
+            # Check embedding model
+            if self.embedding_model not in model_names:
+                missing_models.append(self.embedding_model)
+
+            if missing_models:
+                print(f"⚠️  Missing models: {', '.join(missing_models)}")
                 print(f"Available models: {model_names}")
                 return False
 
+            print(f"✓ Text model '{self.model}' is available")
+            print(f"✓ Embedding model '{self.embedding_model}' is available")
             return True
 
         except Exception as e:
             print(f"Failed to check model availability: {e}")
             return False
 
-    def pull_model(self) -> bool:
-        """Pull the configured model from Ollama"""
+    def pull_model(self, model_name: Optional[str] = None) -> bool:
+        """Pull a model from Ollama"""
         try:
-            print(f"Pulling model: {self.model}")
-            ollama.pull(self.model)
-            print(f"✓ Model {self.model} pulled successfully")
+            target_model = model_name if model_name else self.model
+            print(f"Pulling model: {target_model}...")
+            ollama.pull(target_model)
+            print(f"✓ Model {target_model} pulled successfully")
             return True
 
         except Exception as e:
-            print(f"Failed to pull model: {e}")
+            print(f"❌ Failed to pull model {target_model}: {e}")
             return False
+
+    def pull_all_models(self) -> bool:
+        """Pull both text generation and embedding models"""
+        print("\n" + "="*60)
+        print("📦 Pulling required Ollama models...")
+        print("="*60 + "\n")
+
+        success = True
+
+        # Pull text generation model
+        print(f"[1/2] Pulling text generation model: {self.model}")
+        if not self.pull_model(self.model):
+            success = False
+
+        print()  # Blank line
+
+        # Pull embedding model (only if different from text model)
+        if self.embedding_model != self.model:
+            print(f"[2/2] Pulling embedding model: {self.embedding_model}")
+            if not self.pull_model(self.embedding_model):
+                success = False
+        else:
+            print(f"[2/2] Embedding model same as text model, skipping...")
+
+        print("\n" + "="*60)
+        if success:
+            print("✅ All models pulled successfully!")
+        else:
+            print("❌ Some models failed to pull. Please check the errors above.")
+        print("="*60 + "\n")
+
+        return success

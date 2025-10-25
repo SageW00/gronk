@@ -76,7 +76,9 @@ echo   - data\: Place your PDF files here
 echo.
 echo Quick Start:
 echo   1. Ensure PostgreSQL 16/18 is running on port 5432
-echo   2. Ensure Ollama is running with gemma3:1b model
+echo   2. Ensure Ollama is running with required models:
+echo      - ollama pull gemma3:1b (text generation)
+echo      - ollama pull embeddinggemma (embeddings)
 echo   3. Double-click AerospaceRAG-GUI.exe to launch the GUI
 echo   4. Or run AerospaceRAG-CLI.exe from command prompt
 echo.
@@ -97,6 +99,8 @@ echo   1. Copy the 'dist' folder to any Windows computer
 echo   2. Double-click AerospaceRAG-GUI.exe to run
 echo.
 echo Note: You still need PostgreSQL and Ollama running
-echo       on the target machine.
+echo       on the target machine with both models installed:
+echo       - gemma3:1b (text generation)
+echo       - embeddinggemma (embeddings)
 echo.
 pause

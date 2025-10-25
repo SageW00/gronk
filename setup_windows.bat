@@ -40,6 +40,39 @@ if errorlevel 1 (
     echo Please ensure Ollama is installed and running
     echo Download from: https://ollama.com/download/windows
     echo.
+) else (
+    echo Ollama is running
+    echo.
+
+    REM Check and pull required models
+    echo Checking required Ollama models...
+    echo.
+
+    REM Check text generation model (gemma3:1b)
+    echo [1/2] Checking text generation model (gemma3:1b)...
+    curl -s http://localhost:11434/api/tags | findstr /C:"gemma3:1b" >nul 2>&1
+    if errorlevel 1 (
+        echo ! gemma3:1b model not found
+        echo   Pulling model (this may take a few minutes)...
+        ollama pull gemma3:1b
+        echo   Successfully pulled gemma3:1b
+    ) else (
+        echo   Successfully verified gemma3:1b is available
+    )
+    echo.
+
+    REM Check embedding model (embeddinggemma)
+    echo [2/2] Checking embedding model (embeddinggemma)...
+    curl -s http://localhost:11434/api/tags | findstr /C:"embeddinggemma" >nul 2>&1
+    if errorlevel 1 (
+        echo ! embeddinggemma model not found
+        echo   Pulling model (this may take a few minutes)...
+        ollama pull embeddinggemma
+        echo   Successfully pulled embeddinggemma
+    ) else (
+        echo   Successfully verified embeddinggemma is available
+    )
+    echo.
 )
 
 REM Create virtual environment

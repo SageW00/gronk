@@ -12,8 +12,8 @@ database:
 # Ollama Configuration
 ollama:
   base_url: http://localhost:11434
-  model: gemma3:1b
-  embedding_model: gemma3:1b
+  model: gemma3:1b              # Text generation model
+  embedding_model: embeddinggemma  # Embedding model (specialized for embeddings)
   temperature: 0.7
   max_tokens: 2048
 

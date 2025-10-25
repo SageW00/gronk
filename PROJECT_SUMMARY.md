@@ -16,8 +16,9 @@ A complete, production-ready RAG (Retrieval-Augmented Generation) system specifi
 
 ### Technical Highlights
 - **RAG Architecture**: Query → Embedding → Retrieval → Generation
-- **Embeddings**: 384-dimensional vectors from gemma3:1b
-- **Database**: PostgreSQL 16 with ivfflat vector indexing
+- **Embeddings**: 384-dimensional vectors from embeddinggemma (specialized model)
+- **Text Generation**: gemma3:1b for answer generation
+- **Database**: PostgreSQL 16/18 with ivfflat vector indexing
 - **Chunking**: Sentence-based with configurable overlap
 - **Similarity**: Cosine similarity with configurable threshold
 
@@ -110,7 +111,8 @@ database:
 ```yaml
 ollama:
   base_url: http://localhost:11434
-  model: gemma3:1b
+  model: gemma3:1b              # Text generation model
+  embedding_model: embeddinggemma  # Embedding model (specialized for embeddings)
   temperature: 0.7
   max_tokens: 2048
 ```
@@ -226,11 +228,13 @@ courses:
 1. Edit `config/config.yaml`:
 ```yaml
 ollama:
-  model: llama2  # or mistral, codellama, etc.
-  embedding_model: llama2
+  model: llama2           # or mistral, codellama, etc. (for text generation)
+  embedding_model: nomic-embed-text  # or other embedding models
 ```
-2. Pull new model: `ollama pull llama2`
-3. Note: May need to adjust embedding dimensions in database schema
+2. Pull new models:
+   - `ollama pull llama2` (text generation)
+   - `ollama pull nomic-embed-text` (embeddings)
+3. Note: May need to adjust embedding dimensions in database schema if using different embedding models
 
 ### Custom Content Types
 Beyond coursenotes/textbook, you can add:
@@ -276,7 +280,8 @@ ollama serve  # Start Ollama service
 ### Issue: "Model not found"
 **Solution**:
 ```bash
-ollama pull gemma3:1b
+ollama pull gemma3:1b         # Text generation model
+ollama pull embeddinggemma    # Embedding model
 ```
 
 ### Issue: "Extension vector does not exist"

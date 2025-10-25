@@ -36,14 +36,31 @@ else
 fi
 echo ""
 
-# Check if gemma3:1b model is available
-echo "Checking for gemma3:1b model..."
+# Check and pull required Ollama models
+echo "Checking required Ollama models..."
+echo ""
+
+# Check text generation model (gemma3:1b)
+echo "[1/2] Checking text generation model (gemma3:1b)..."
 if curl -s http://localhost:11434/api/tags | grep -q "gemma3:1b"; then
     echo "✓ gemma3:1b model is available"
 else
     echo "! gemma3:1b model not found"
-    echo "  Pulling model (this may take a while)..."
+    echo "  Pulling model (this may take a few minutes)..."
     ollama pull gemma3:1b
+    echo "✓ gemma3:1b model pulled successfully"
+fi
+echo ""
+
+# Check embedding model (embeddinggemma)
+echo "[2/2] Checking embedding model (embeddinggemma)..."
+if curl -s http://localhost:11434/api/tags | grep -q "embeddinggemma"; then
+    echo "✓ embeddinggemma model is available"
+else
+    echo "! embeddinggemma model not found"
+    echo "  Pulling model (this may take a few minutes)..."
+    ollama pull embeddinggemma
+    echo "✓ embeddinggemma model pulled successfully"
 fi
 echo ""
 
