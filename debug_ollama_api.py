@@ -43,7 +43,40 @@ print(f"Type: {type(models)}")
 print(f"Value: {models}")
 print()
 
-if isinstance(models, dict):
+# Check if it's a ListResponse object
+if hasattr(models, 'models'):
+    print("Response is a LISTRESPONSE OBJECT (ollama._types.ListResponse)")
+    print("✓ Has 'models' attribute")
+    print()
+
+    models_list = models.models
+    print(f"models attribute type: {type(models_list)}")
+    print(f"Number of models: {len(models_list)}")
+    print()
+
+    if len(models_list) > 0:
+        print("First model structure:")
+        first = models_list[0]
+        print(f"  Type: {type(first)}")
+        print(f"  Attributes: {dir(first)}")
+        print()
+
+        if hasattr(first, 'model'):
+            print(f"  ✓ Has .model attribute: {first.model}")
+        if hasattr(first, 'size'):
+            print(f"  ✓ Has .size attribute: {first.size}")
+        if hasattr(first, 'modified_at'):
+            print(f"  ✓ Has .modified_at attribute: {first.modified_at}")
+
+        print()
+        print("All models:")
+        for i, m in enumerate(models_list):
+            if hasattr(m, 'model'):
+                print(f"  [{i}] {m.model}")
+            else:
+                print(f"  [{i}] {m}")
+
+elif isinstance(models, dict):
     print("Response is a DICT")
     print(f"Keys: {list(models.keys())}")
     print()
@@ -102,7 +135,21 @@ print()
 model_names = []
 
 try:
-    if isinstance(models, dict) and 'models' in models:
+    # Handle ListResponse object (ollama._types.ListResponse)
+    if hasattr(models, 'models'):
+        print("Extracting from ListResponse object...")
+        for m in models.models:
+            if hasattr(m, 'model'):
+                model_name = m.model
+                model_names.append(model_name)
+                print(f"✓ Found model: {model_name}")
+            else:
+                model_names.append(str(m))
+                print(f"✓ Found model: {str(m)}")
+
+    # Handle dict-based response
+    elif isinstance(models, dict) and 'models' in models:
+        print("Extracting from dict response...")
         for m in models['models']:
             if isinstance(m, dict):
                 # Try different keys
