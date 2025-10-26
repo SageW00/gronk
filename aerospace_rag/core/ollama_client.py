@@ -34,6 +34,21 @@ class OllamaClient:
             return embedding
 
         except Exception as e:
+            error_msg = str(e)
+            # Check if it's the common "model doesn't support embeddings" error
+            if "does not support embeddings" in error_msg or "status code: 500" in error_msg:
+                print("\n" + "="*60)
+                print("ERROR: Wrong model for embeddings")
+                print("="*60)
+                print(f"\nThe model '{self.embedding_model}' does not support embeddings.")
+                print("\nYou need to use an embedding-specific model.")
+                print("\nTo fix this:")
+                print("  1. Pull the embedding model:")
+                print(f"     ollama pull embeddinggemma")
+                print("\n  2. Your config should have:")
+                print(f"     embedding_model: embeddinggemma")
+                print("\n  3. Or run the setup script again to auto-configure")
+                print("="*60 + "\n")
             raise Exception(f"Failed to generate embedding: {e}")
 
     def generate_embeddings_batch(self, texts: List[str]) -> List[np.ndarray]:
@@ -49,8 +64,8 @@ class OllamaClient:
 
             except Exception as e:
                 print(f"Warning: Failed to generate embedding for text {i}: {e}")
-                # Use zero vector as fallback
-                embeddings.append(np.zeros(384, dtype=np.float32))
+                # Use zero vector as fallback (embeddinggemma uses 768 dimensions)
+                embeddings.append(np.zeros(768, dtype=np.float32))
 
         return embeddings
 
@@ -165,3 +180,72 @@ class OllamaClient:
         except Exception as e:
             print(f"Failed to pull model: {e}")
             return False
+
+    def check_models_available(self) -> tuple[bool, List[str]]:
+        """Check if both text generation and embedding models are available"""
+        try:
+            models = ollama.list()
+            model_names = [m['name'] for m in models.get('models', [])]
+
+            missing_models = []
+
+            if self.model not in model_names:
+                missing_models.append(self.model)
+
+            if self.embedding_model not in model_names:
+                missing_models.append(self.embedding_model)
+
+            return len(missing_models) == 0, missing_models
+
+        except Exception as e:
+            print(f"Failed to check model availability: {e}")
+            return False, []
+
+    def pull_required_models(self) -> bool:
+        """Pull both text generation and embedding models"""
+        try:
+            models_to_pull = [self.model, self.embedding_model]
+            # Remove duplicates
+            models_to_pull = list(set(models_to_pull))
+
+            print(f"\nPulling required Ollama models...")
+            print(f"  - Text generation: {self.model}")
+            print(f"  - Embeddings: {self.embedding_model}")
+            print()
+
+            for model in models_to_pull:
+                print(f"Pulling {model}... (this may take a few minutes)")
+                ollama.pull(model)
+                print(f"✓ {model} pulled successfully\n")
+
+            return True
+
+        except Exception as e:
+            print(f"Failed to pull models: {e}")
+            return False
+
+    def validate_models(self) -> bool:
+        """Validate that both models are available and working"""
+        print("Validating Ollama models...")
+
+        all_available, missing = self.check_models_available()
+
+        if not all_available:
+            print("\n" + "="*60)
+            print("ERROR: Missing Ollama Models")
+            print("="*60)
+            print("\nThe following models are not installed:")
+            for model in missing:
+                print(f"  - {model}")
+            print("\nTo install missing models:")
+            for model in missing:
+                print(f"  ollama pull {model}")
+            print("\nOr run the setup script to auto-install:")
+            print("  Windows: setup_windows.bat")
+            print("  Linux/Mac: ./setup.sh")
+            print("="*60 + "\n")
+            return False
+
+        print(f"✓ Text generation model: {self.model}")
+        print(f"✓ Embedding model: {self.embedding_model}")
+        return True

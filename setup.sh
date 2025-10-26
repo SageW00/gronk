@@ -36,15 +36,45 @@ else
 fi
 echo ""
 
+# Pull required Ollama models
+echo "Pulling required Ollama models..."
+echo "This application requires two models:"
+echo "  1. gemma3:1b - for text generation (answering questions)"
+echo "  2. embeddinggemma - for embeddings (semantic search)"
+echo ""
+
 # Check if gemma3:1b model is available
 echo "Checking for gemma3:1b model..."
-if curl -s http://localhost:11434/api/tags | grep -q "gemma3:1b"; then
-    echo "✓ gemma3:1b model is available"
+if ollama list | grep -q "gemma3:1b"; then
+    echo "  ✓ gemma3:1b already installed"
 else
-    echo "! gemma3:1b model not found"
-    echo "  Pulling model (this may take a while)..."
+    echo "  Pulling gemma3:1b... (this may take a few minutes)"
     ollama pull gemma3:1b
+    if [ $? -eq 0 ]; then
+        echo "  ✓ gemma3:1b installed successfully"
+    else
+        echo "  ✗ Failed to pull gemma3:1b"
+        exit 1
+    fi
 fi
+
+# Check if embeddinggemma model is available
+echo "Checking for embeddinggemma model..."
+if ollama list | grep -q "embeddinggemma"; then
+    echo "  ✓ embeddinggemma already installed"
+else
+    echo "  Pulling embeddinggemma... (this may take a few minutes)"
+    ollama pull embeddinggemma
+    if [ $? -eq 0 ]; then
+        echo "  ✓ embeddinggemma installed successfully"
+    else
+        echo "  ✗ Failed to pull embeddinggemma"
+        exit 1
+    fi
+fi
+
+echo ""
+echo "✓ All required Ollama models are installed!"
 echo ""
 
 # Create virtual environment

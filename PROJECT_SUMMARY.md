@@ -16,8 +16,8 @@ A complete, production-ready RAG (Retrieval-Augmented Generation) system specifi
 
 ### Technical Highlights
 - **RAG Architecture**: Query → Embedding → Retrieval → Generation
-- **Embeddings**: 384-dimensional vectors from gemma3:1b
-- **Database**: PostgreSQL 16 with ivfflat vector indexing
+- **Models**: gemma3:1b (text generation) + embeddinggemma (768-dim embeddings)
+- **Database**: PostgreSQL 16/18 with ivfflat vector indexing
 - **Chunking**: Sentence-based with configurable overlap
 - **Similarity**: Cosine similarity with configurable threshold
 

@@ -1,6 +1,6 @@
 # Aerospace RAG Application
 
-An AI-powered Retrieval-Augmented Generation (RAG) system for aerospace engineering education. This application uses Ollama (gemma3:1b), PostgreSQL with pgvector, and PDF parsing to create an intelligent assistant for MIT OCW aerospace course materials.
+An AI-powered Retrieval-Augmented Generation (RAG) system for aerospace engineering education. This application uses Ollama (gemma3:1b for text generation + embeddinggemma for embeddings), PostgreSQL with pgvector, and PDF parsing to create an intelligent assistant for MIT OCW aerospace course materials.
 
 ## 🪟 Windows Users - Quick Start!
 
@@ -72,7 +72,7 @@ The build process creates:
 
    More details: See "pgvector Installation" section below.
 
-3. **Ollama** (with gemma3:1b model)
+3. **Ollama** (with two models: gemma3:1b and embeddinggemma)
    ```bash
    # Install Ollama
    curl -fsSL https://ollama.com/install.sh | sh
@@ -80,9 +80,12 @@ The build process creates:
    # Start Ollama
    ollama serve
 
-   # Pull the model (in another terminal)
-   ollama pull gemma3:1b
+   # Pull both required models (in another terminal)
+   ollama pull gemma3:1b         # For text generation
+   ollama pull embeddinggemma    # For embeddings
    ```
+
+   **Note**: The setup script will automatically pull both models for you!
 
 ## Installation
 
@@ -495,10 +498,12 @@ psql -U postgres -p 5432 -c "DROP DATABASE IF EXISTS AEROSPACE;"
 
 ## Technical Details
 
-- **Embeddings**: 384-dimensional vectors from gemma3:1b
+- **Models**:
+  - Text Generation: gemma3:1b (fast, efficient responses)
+  - Embeddings: embeddinggemma (768-dimensional vectors)
 - **Similarity**: Cosine similarity with pgvector's `<=>` operator
 - **Chunking**: Sentence-based with configurable overlap
-- **Database**: PostgreSQL 16 with ivfflat index for vector search
+- **Database**: PostgreSQL 16/18 with ivfflat index for vector search
 
 ## License
 

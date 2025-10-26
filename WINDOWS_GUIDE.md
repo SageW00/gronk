@@ -72,8 +72,12 @@ ollama serve
 
 In another terminal:
 ```cmd
-ollama pull gemma3:1b
+# Pull both required models
+ollama pull gemma3:1b         # For text generation
+ollama pull embeddinggemma    # For embeddings
 ```
+
+**Note**: The setup script (`setup_windows.bat`) will automatically pull both models for you!
 
 ## Quick Setup (Recommended)
 

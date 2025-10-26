@@ -40,7 +40,51 @@ if errorlevel 1 (
     echo Please ensure Ollama is installed and running
     echo Download from: https://ollama.com/download/windows
     echo.
+    pause
+    exit /b 1
 )
+
+REM Pull required Ollama models
+echo.
+echo Pulling required Ollama models...
+echo This application requires two models:
+echo   1. gemma3:1b - for text generation (answering questions)
+echo   2. embeddinggemma - for embeddings (semantic search)
+echo.
+
+REM Check if gemma3:1b is already installed
+ollama list 2>nul | findstr /C:"gemma3:1b" >nul 2>&1
+if errorlevel 1 (
+    echo Pulling gemma3:1b... (this may take a few minutes)
+    ollama pull gemma3:1b
+    if errorlevel 1 (
+        echo ERROR: Failed to pull gemma3:1b
+        pause
+        exit /b 1
+    )
+    echo   - gemma3:1b installed successfully
+) else (
+    echo   - gemma3:1b already installed
+)
+
+REM Check if embeddinggemma is already installed
+ollama list 2>nul | findstr /C:"embeddinggemma" >nul 2>&1
+if errorlevel 1 (
+    echo Pulling embeddinggemma... (this may take a few minutes)
+    ollama pull embeddinggemma
+    if errorlevel 1 (
+        echo ERROR: Failed to pull embeddinggemma
+        pause
+        exit /b 1
+    )
+    echo   - embeddinggemma installed successfully
+) else (
+    echo   - embeddinggemma already installed
+)
+
+echo.
+echo All required Ollama models are installed!
+echo.
 
 REM Create virtual environment
 echo Creating virtual environment...

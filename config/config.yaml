@@ -10,10 +10,13 @@ database:
   database: AEROSPACE
 
 # Ollama Configuration
+# Uses two separate models for optimal performance:
+# - gemma3:1b: Fast text generation for answering questions
+# - embeddinggemma: Specialized embedding model for semantic search
 ollama:
   base_url: http://localhost:11434
   model: gemma3:1b
-  embedding_model: gemma3:1b
+  embedding_model: embeddinggemma
   temperature: 0.7
   max_tokens: 2048
 
