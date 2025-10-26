@@ -6,17 +6,27 @@ echo Aerospace RAG CLI Launcher
 echo ========================================
 echo.
 
-REM Activate virtual environment if it exists
-if exist "venv\Scripts\activate.bat" (
-    echo Activating virtual environment...
-    call venv\Scripts\activate.bat
-) else (
-    echo WARNING: Virtual environment not found!
-    echo Please run setup_windows.bat first.
+REM Check if virtual environment exists
+if not exist "venv\Scripts\activate.bat" (
+    echo Virtual environment not found!
+    echo Running setup first...
     echo.
-    pause
-    exit /b 1
+    call setup_windows.bat
+    if errorlevel 1 (
+        echo.
+        echo ERROR: Setup failed!
+        echo.
+        pause
+        exit /b 1
+    )
+    echo.
+    echo Setup complete! Now launching CLI...
+    echo.
 )
+
+REM Activate virtual environment
+echo Activating virtual environment...
+call venv\Scripts\activate.bat
 
 REM Check if Python is available
 python --version >nul 2>&1
