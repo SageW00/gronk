@@ -7,9 +7,11 @@ __pycache__/
 venv/
 env/
 ENV/
-build/
+build/*
+!build/.gitkeep
 develop-eggs/
-dist/
+dist/*
+!dist/.gitkeep
 downloads/
 eggs/
 .eggs/
@@ -42,9 +44,9 @@ data/textbook/**/*.pdf
 # Keep directory structure
 !.gitkeep
 
-# Environment variables
-.env
+# Environment variables - INCLUDE .env with defaults
 .env.local
+.env.production
 
 # Database dumps
 *.sql
