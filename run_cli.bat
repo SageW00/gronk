@@ -8,20 +8,24 @@ echo.
 
 REM Check if virtual environment exists
 if not exist "venv\Scripts\activate.bat" (
-    echo Virtual environment not found!
-    echo Running setup first...
     echo.
-    call setup_windows.bat
-    if errorlevel 1 (
-        echo.
-        echo ERROR: Setup failed!
-        echo.
-        pause
-        exit /b 1
-    )
+    echo ============================================
+    echo  FIRST TIME SETUP REQUIRED
+    echo ============================================
     echo.
-    echo Setup complete! Now launching CLI...
+    echo The venv folder is missing!
+    echo Please run INSTALL.bat first to set up everything.
     echo.
+    echo This is a ONE-TIME setup that:
+    echo   - Creates venv folder
+    echo   - Installs all packages
+    echo   - Downloads Ollama models
+    echo.
+    echo After that, this will work automatically!
+    echo ============================================
+    echo.
+    pause
+    exit /b 1
 )
 
 REM Activate virtual environment

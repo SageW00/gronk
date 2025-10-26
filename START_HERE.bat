@@ -11,7 +11,7 @@ echo =========================================
 echo.
 echo What would you like to do?
 echo.
-echo   [1] Setup (First Time Only)
+echo   [1] Install Everything (First Time Only)
 echo   [2] Run GUI (Graphical Interface)
 echo   [3] Run CLI (Command-Line Interface)
 echo   [4] Test System
@@ -33,13 +33,10 @@ goto menu
 :setup
 cls
 echo ========================================
-echo RUNNING SETUP
+echo RUNNING INSTALLER
 echo ========================================
 echo.
-call setup_windows.bat
-echo.
-echo Setup complete!
-pause
+call INSTALL.bat
 goto menu
 
 :run_gui
