@@ -9,14 +9,19 @@ echo ============================================================
 echo   AEROSPACE RAG APPLICATION - ONE-CLICK INSTALLER
 echo ============================================================
 echo.
-echo This will:
+echo This will install everything you need:
 echo   1. Create virtual environment (venv folder)
 echo   2. Install all Python packages (requirements.txt)
 echo   3. Pull Ollama models (gemma3:1b, embeddinggemma)
 echo   4. Create build folders (dist, build)
-echo   5. Set up database
+echo   5. Set up database structure
 echo.
-echo This may take 5-10 minutes depending on your internet speed.
+echo Time required: 5-10 minutes (depending on internet speed)
+echo.
+echo REQUIREMENTS:
+echo   - Python 3.8+ installed and in PATH
+echo   - PostgreSQL 16+ installed and running
+echo   - Ollama installed and running
 echo.
 pause
 echo.
@@ -28,16 +33,20 @@ echo [1/6] Checking Python installation...
 python --version >nul 2>&1
 if errorlevel 1 (
     echo.
+    echo ============================================
     echo ERROR: Python not found!
+    echo ============================================
     echo.
-    echo Please install Python 3.8+ from: https://www.python.org/downloads/
-    echo Make sure to check "Add Python to PATH" during installation!
+    echo Please install Python 3.8 or higher from:
+    echo https://www.python.org/downloads/
+    echo.
+    echo IMPORTANT: During installation, check "Add Python to PATH"
     echo.
     pause
     exit /b 1
 )
 python --version
-echo   Python found!
+echo   ✓ Python found!
 echo.
 
 REM ============================================================
@@ -45,114 +54,141 @@ REM STEP 2: Create venv folder
 REM ============================================================
 echo [2/6] Creating virtual environment (venv folder)...
 if exist venv (
-    echo   venv folder already exists, skipping...
+    echo   ✓ venv folder already exists
 ) else (
     python -m venv venv
     if errorlevel 1 (
         echo.
         echo ERROR: Failed to create virtual environment!
+        echo Make sure Python venv module is installed.
         echo.
         pause
         exit /b 1
     )
-    echo   venv folder created!
+    echo   ✓ venv folder created successfully!
 )
 echo.
 
 REM ============================================================
 REM STEP 3: Install Python packages
 REM ============================================================
-echo [3/6] Installing Python packages from requirements.txt...
+echo [3/6] Installing Python packages...
 echo   This may take 2-3 minutes...
 call venv\Scripts\activate.bat
-python -m pip install --upgrade pip --quiet
+
+REM Upgrade pip first
+python -m pip install --upgrade pip --quiet >nul 2>&1
+
+REM Install all requirements
 pip install -r requirements.txt --quiet
 if errorlevel 1 (
     echo.
-    echo ERROR: Failed to install packages!
+    echo ERROR: Failed to install packages from requirements.txt
     echo.
     pause
     exit /b 1
 )
-pip install pyinstaller --quiet
-echo   All packages installed!
+
+REM Install PyInstaller for building executables
+pip install pyinstaller --quiet >nul 2>&1
+
+echo   ✓ All Python packages installed!
 echo.
 
 REM ============================================================
 REM STEP 4: Create build folders
 REM ============================================================
-echo [4/6] Creating build folders (dist, build)...
+echo [4/6] Creating build folders...
 if not exist dist mkdir dist
 if not exist build mkdir build
-echo   Folders created!
+echo   ✓ Folders created (dist, build)
 echo.
 
 REM ============================================================
-REM STEP 5: Pull Ollama models
+REM STEP 5: Check and pull Ollama models
 REM ============================================================
 echo [5/6] Checking Ollama and pulling models...
 curl -s http://localhost:11434/api/tags >nul 2>&1
 if errorlevel 1 (
     echo.
+    echo ============================================
     echo WARNING: Ollama not running!
+    echo ============================================
     echo.
-    echo Please install and start Ollama:
-    echo   Download from: https://ollama.com/download/windows
-    echo   Then run: ollama serve
+    echo Ollama is required for AI text generation and embeddings.
     echo.
-    echo Skipping model download for now.
-    echo You can pull models later with: ollama pull gemma3:1b
+    echo To install Ollama:
+    echo   1. Download from: https://ollama.com/download/windows
+    echo   2. Install and start Ollama
+    echo   3. Run this installer again
+    echo.
+    echo Skipping model download for now...
     echo.
 ) else (
-    echo   Ollama is running!
+    echo   ✓ Ollama is running!
     echo.
 
-    REM Check gemma3:1b
-    echo   Checking gemma3:1b...
+    REM Check gemma3:1b (text generation model)
+    echo   Checking gemma3:1b (text generation model)...
     curl -s http://localhost:11434/api/tags | findstr /C:"gemma3:1b" >nul 2>&1
     if errorlevel 1 (
-        echo   Pulling gemma3:1b (this may take 3-5 minutes)...
+        echo   ! Model not found, pulling now...
+        echo   This may take 3-5 minutes (815 MB download)
         ollama pull gemma3:1b
+        if errorlevel 1 (
+            echo   WARNING: Failed to pull gemma3:1b
+        ) else (
+            echo   ✓ gemma3:1b installed!
+        )
     ) else (
-        echo   gemma3:1b already available!
+        echo   ✓ gemma3:1b already installed
     )
 
-    REM Check embeddinggemma
-    echo   Checking embeddinggemma...
+    REM Check embeddinggemma (embedding model)
+    echo   Checking embeddinggemma (embedding model)...
     curl -s http://localhost:11434/api/tags | findstr /C:"embeddinggemma" >nul 2>&1
     if errorlevel 1 (
-        echo   Pulling embeddinggemma (this may take 2-3 minutes)...
+        echo   ! Model not found, pulling now...
+        echo   This may take 2-3 minutes (621 MB download)
         ollama pull embeddinggemma
+        if errorlevel 1 (
+            echo   WARNING: Failed to pull embeddinggemma
+        ) else (
+            echo   ✓ embeddinggemma installed!
+        )
     ) else (
-        echo   embeddinggemma already available!
+        echo   ✓ embeddinggemma already installed
     )
 
     echo.
-    echo   All Ollama models ready!
+    echo   ✓ All Ollama models ready!
 )
 echo.
 
 REM ============================================================
-REM STEP 6: Database setup
+REM STEP 6: Check database
 REM ============================================================
-echo [6/6] Checking database...
+echo [6/6] Checking PostgreSQL database...
 pg_isready -h localhost -p 5432 >nul 2>&1
 if errorlevel 1 (
     echo.
+    echo ============================================
     echo WARNING: PostgreSQL not running!
+    echo ============================================
     echo.
-    echo Please install PostgreSQL:
-    echo   Download from: https://www.postgresql.org/download/windows/
-    echo   Or use: https://www.enterprisedb.com/downloads/postgres-postgresql-downloads
+    echo PostgreSQL is required for vector database storage.
     echo.
-    echo After installing PostgreSQL:
-    echo   1. Run: migrate_vector_dimensions.bat
-    echo   2. This will create the AEROSPACE database
+    echo To install PostgreSQL:
+    echo   1. Download from: https://www.postgresql.org/download/windows/
+    echo   2. Install PostgreSQL 16 or higher
+    echo   3. Set password to '1234' (or update .env file)
+    echo   4. Run: migrate_vector_dimensions.bat
     echo.
 ) else (
-    echo   PostgreSQL is running!
+    echo   ✓ PostgreSQL is running!
     echo.
-    echo   Next step: Run migrate_vector_dimensions.bat to create database
+    echo   NEXT STEP: Create the AEROSPACE database
+    echo   Run: migrate_vector_dimensions.bat
 )
 echo.
 
@@ -163,18 +199,18 @@ echo ============================================================
 echo   INSTALLATION COMPLETE!
 echo ============================================================
 echo.
-echo What was created:
-echo   - venv folder (virtual environment with all packages)
-echo   - dist folder (for built executables)
-echo   - build folder (for build files)
-echo   - .env file (configuration)
+echo What was installed:
+echo   ✓ venv folder (Python virtual environment)
+echo   ✓ All Python packages (from requirements.txt)
+echo   ✓ Ollama models (gemma3:1b, embeddinggemma)
+echo   ✓ Build folders (dist, build)
 echo.
 echo Next steps:
-echo   1. If you haven't already, run: migrate_vector_dimensions.bat
-echo   2. Then launch the app:
-echo      - Double-click: run_gui.bat (for graphical interface)
-echo      - Double-click: run_cli.bat (for command-line interface)
+echo   1. Run: migrate_vector_dimensions.bat (create database)
+echo   2. Launch app: run_gui.bat (GUI) or run_cli.bat (CLI)
+echo   3. Add PDFs: Place in data/coursenotes/ or data/textbook/
+echo   4. Index PDFs: Choose option 4 in START_HERE.bat
 echo.
-echo All folders and dependencies are now ready!
+echo You can now use the Aerospace RAG application!
 echo.
 pause
