@@ -158,56 +158,49 @@ class OllamaClient:
         try:
             models_response = ollama.list()
 
-            # Debug: Show raw API response structure
-            print(f"🔍 DEBUG - Raw Ollama API response type: {type(models_response)}")
-            print(f"🔍 DEBUG - Response keys: {models_response.keys() if isinstance(models_response, dict) else 'Not a dict'}")
-
-            # Handle different API response structures
+            # Extract model names from the response
             model_names = []
 
-            if isinstance(models_response, dict):
-                # Try different possible structures
-                if 'models' in models_response:
-                    models_list = models_response['models']
-                    print(f"🔍 DEBUG - Found 'models' key, type: {type(models_list)}")
+            # Handle ListResponse object (ollama._types.ListResponse)
+            if hasattr(models_response, 'models'):
+                # Access models attribute (not dict key)
+                models_list = models_response.models
+                print(f"✓ Found {len(models_list)} models in Ollama")
 
-                    if isinstance(models_list, list) and len(models_list) > 0:
-                        # Check first item structure
-                        first_item = models_list[0]
-                        print(f"🔍 DEBUG - First model structure: {first_item}")
+                for m in models_list:
+                    # Each model is a Model object with .model attribute
+                    if hasattr(m, 'model'):
+                        model_name = m.model  # e.g., 'gemma3:1b', 'embeddinggemma:latest'
+                        model_names.append(model_name)
+                    else:
+                        # Fallback: convert to string
+                        model_names.append(str(m))
 
-                        # Extract names based on structure
-                        for m in models_list:
-                            if isinstance(m, dict):
-                                # Try different possible keys
-                                name = m.get('name') or m.get('model') or m.get('id') or str(m)
-                                model_names.append(name)
-                            elif isinstance(m, str):
-                                model_names.append(m)
-                            else:
-                                model_names.append(str(m))
-                else:
-                    # Maybe models are at root level
-                    print(f"🔍 DEBUG - No 'models' key, checking root level")
-                    model_names = list(models_response.keys())
-            elif isinstance(models_response, list):
-                # Response is directly a list
-                print(f"🔍 DEBUG - Response is a list")
-                for m in models_response:
+            # Fallback: Handle dict-based responses (older API versions)
+            elif isinstance(models_response, dict) and 'models' in models_response:
+                models_list = models_response['models']
+                for m in models_list:
                     if isinstance(m, dict):
-                        name = m.get('name') or m.get('model') or m.get('id') or str(m)
-                        model_names.append(name)
+                        name = m.get('name') or m.get('model') or m.get('id')
+                        if name:
+                            model_names.append(name)
                     else:
                         model_names.append(str(m))
 
-            # Clean up None values
-            model_names = [m for m in model_names if m and m != 'None']
+            # Fallback: Handle list responses
+            elif isinstance(models_response, list):
+                for m in models_response:
+                    if isinstance(m, dict):
+                        name = m.get('name') or m.get('model') or m.get('id')
+                        if name:
+                            model_names.append(name)
+                    else:
+                        model_names.append(str(m))
 
-            print(f"✅ Detected Ollama models: {model_names}")
+            print(f"✓ Available models: {', '.join(model_names)}")
 
             if not model_names:
                 print("⚠️  Warning: No models found!")
-                print(f"   Raw response: {models_response}")
                 return False
 
             missing_models = []
@@ -221,30 +214,41 @@ class OllamaClient:
                 # Direct match
                 if target_model in available_models:
                     return True
-                # Check with :latest tag
+
+                # Check with :latest tag added
                 if f"{target_model}:latest" in available_models:
                     return True
-                # Check if any model starts with the target name
+
+                # Check if target has :latest but model doesn't
+                target_base = target_model.replace(':latest', '')
+                if target_base in available_models:
+                    return True
+
+                # Check if any model starts with the target name (handles different tags)
                 for model in available_models:
                     model_str = str(model)
-                    if model_str.startswith(f"{target_model}:"):
+                    # Extract base name (before first :)
+                    if ':' in model_str:
+                        model_base = model_str.split(':')[0]
+                        target_base = target_model.split(':')[0]
+                        if model_base == target_base:
+                            return True
+                    elif model_str.startswith(f"{target_model}:"):
                         return True
-                    # Handle case where stored model has tags but we're looking for base
-                    if ':' in model_str and model_str.split(':')[0] == target_model.split(':')[0]:
-                        return True
+
                 return False
 
             # Check text generation model
             if not model_exists(self.model, model_names):
                 missing_models.append(self.model)
-                print(f"❌ Text model '{self.model}' not found")
+                print(f"✗ Text model '{self.model}' not found")
             else:
                 print(f"✓ Text model '{self.model}' is available")
 
             # Check embedding model
             if not model_exists(self.embedding_model, model_names):
                 missing_models.append(self.embedding_model)
-                print(f"❌ Embedding model '{self.embedding_model}' not found")
+                print(f"✗ Embedding model '{self.embedding_model}' not found")
             else:
                 print(f"✓ Embedding model '{self.embedding_model}' is available")
 
